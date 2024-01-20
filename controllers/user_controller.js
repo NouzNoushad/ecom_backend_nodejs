@@ -43,10 +43,38 @@ export const registerUser = (req, res) => {
 					}
 				}
 			}
-			
 		});
 	} catch (error) {
 		res.status(404).json({ message: 'Something went wrong', error: error });
 	}
-	
+}
+
+export const loginUser = async (req, res) => {
+	try {
+		const { email, password } = req.body;
+		console.log(req.body);
+		const user = await userSchema.findOne({ email: email });
+		if (user) {
+			bcrypt.compare(password, user.password).then((status) => {
+				if (status) {
+					jwt.sign({id: user._id, name: user.name}, process.env.SECRET_KEY, {
+						expiresIn: 60 * 60 * 24 * 30
+					}, (error, token) => {
+						if (token) {
+							res.status(200).json({ message: 'Successfully logged in', token: token });
+						} else {
+							res.status(404).json({message: 'Unable to load token'})
+						}
+					})
+				} else {
+					res.status(404).json({ message: 'Invalid password' });
+				}
+			});
+		} else {
+			res.status(404).json({ message: 'User not found' });
+		}
+		
+	} catch (error) {
+		res.status(404).json({ message: 'Something went wrong', error: error });
+	}
 }

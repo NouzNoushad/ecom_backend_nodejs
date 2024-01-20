@@ -20,10 +20,10 @@ const db = mongoose.connection;
 db.on('error', (error) => console.log(error));
 db.once('open', () => console.log('Database connected'));
 
+app.use('/public', express.static(path.join(__dirname, 'public')));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
-app.use('/public', express.static(path.join(__dirname, 'public')));
 
 app.use('/api/', userRoute);
 

@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 
 export const uploadImage = (req, res, next) => {
+	console.log('called');
 	const storage = multer.diskStorage({
 		destination: (req, file, cb) => cb(null, 'public/images'),
 		filename: (req, file, cb) => {
