@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoute from "./routes/user_route.js";
 import productsRoute from "./routes/products_route.js";
+import cartRoute from "./routes/cart_route.js";
 import path from "path";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -28,5 +29,6 @@ app.use(express.urlencoded({ extended: false }));
 
 app.use('/api/', userRoute);
 app.use('/api/products/', productsRoute);
+app.use('/api/carts/', cartRoute);
 
 app.listen(process.env.PORT, () => console.log(`Server started on PORT: ${process.env.PORT}`));
