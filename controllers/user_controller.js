@@ -52,7 +52,6 @@ export const registerUser = (req, res) => {
 export const loginUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
-		console.log(req.body);
 		const user = await userSchema.findOne({ email: email });
 		if (user) {
 			bcrypt.compare(password, user.password).then((status) => {
@@ -75,6 +74,19 @@ export const loginUser = async (req, res) => {
 		}
 		
 	} catch (error) {
+		res.status(404).json({ message: 'Something went wrong', error: error });
+	}
+}
+
+export const savedTokens = new Set();
+
+export const logoutUser = (req, res) => {
+	try {
+		const token = req.headers.authorization.split(' ')[1];
+		savedTokens.add(token);
+		jwt.verify(token, process.env.SECRET_KEY, { ignoreExpiration: true });
+		res.status(200).json({ message: 'Successfully logged out' });
+	}catch (error) {
 		res.status(404).json({ message: 'Something went wrong', error: error });
 	}
 }
