@@ -8,7 +8,7 @@ export const getProducts = async (req, res) => {
 		const products = await response.json();
 		res.status(200).json({ status: 'success', products: products["products"] });
 	} catch (error) {
-		res.status(404).json({ message: 'Unable to fetch data' });
+		res.status(404).json({status: 'failure', message: 'Unable to fetch data' });
 	}
 }
 
@@ -23,6 +23,6 @@ export const getProductById = async (req, res) => {
 		const product = await response.json();
 		res.status(200).json({ status: 'success', product });
 	} catch (error) {
-		res.status(404).json({ message: 'Unable to fetch data' });
+		res.status(404).json({status: 'failure', message: 'Unable to fetch data' });
 	}
 }

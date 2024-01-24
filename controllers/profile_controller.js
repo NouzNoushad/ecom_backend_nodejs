@@ -13,18 +13,23 @@ export const getProfile = async (req, res) => {
 				}
 			});
 		} else {
-			res.status(404).json({ message: 'User not found' });
+			res.status(404).json({status: 'failure', message: 'User not found' });
 		}
 	} catch (error) {
-		res.status(404).json({ message: 'Something went wrong' });
+		res.status(404).json({status: 'failure', message: 'Something went wrong' });
 	}
 }
 
 export const updateProfile = async (req, res) => {
 	try {
 		const { id } = req.params;
-		await userSchema.updateOne({ _id: id }, req.body);
-		const user = await userSchema.findById(id);
+		const { username, email } = req.body;
+		const userExists = await userSchema.findOne({ email: email });
+		if (userExists) {
+			res.status(404).json({status: 'failure', message: 'Email already taken' });
+		} else {
+			await userSchema.updateOne({ _id: id }, req.body);
+			const user = await userSchema.findById(id);
 			res.status(200).json({
 				status: 'success', data: {
 					username: user.username,
@@ -32,7 +37,9 @@ export const updateProfile = async (req, res) => {
 					image: user.image,
 				}
 			});
+		}
+		
 	} catch (error) {
-		res.status(404).json({ message: 'Something went wrong' });
+		res.status(404).json({status: 'failure', message: 'Something went wrong' });
 	}
 }

@@ -8,7 +8,7 @@ export const registerUser = (req, res) => {
 	try {
 		req.upload(req, res, async (error) => {
 			if (error) {
-				res.status(404).json({message: 'upload error', error: error})
+				res.status(404).json({status: 'failure', message: 'upload error', error: error})
 			}
 			if (req.file) {
 				// save image
@@ -17,11 +17,11 @@ export const registerUser = (req, res) => {
 
 				const { username, email, password } = req.body;
 				if (!username || !email || !password) {
-					res.status(500).json({ message: 'All fields are required' });
+					res.status(500).json({status: 'failure', message: 'All fields are required' });
 				} else {
 					const user = await userSchema.findOne({ email: email });
 					if (user) {
-						res.status(404).json({ message: 'Email already taken' });
+						res.status(404).json({status: 'failure', message: 'Email already taken' });
 					} else {
 						bcrypt.hash(password, 10).then(async (password) => {
 							const userModel = userSchema({
@@ -32,6 +32,7 @@ export const registerUser = (req, res) => {
 							});
 							const newUser = await userModel.save();
 							res.status(201).json({
+								status: 'success',
 								message: 'Account created successfully', data: {
 									name: newUser.username,
 									email: newUser.email,
@@ -45,7 +46,7 @@ export const registerUser = (req, res) => {
 			}
 		});
 	} catch (error) {
-		res.status(404).json({ message: 'Something went wrong', error: error });
+		res.status(404).json({status: 'failure', message: 'Something went wrong', error: error });
 	}
 }
 
@@ -60,21 +61,21 @@ export const loginUser = async (req, res) => {
 						expiresIn: 60 * 60 * 24 * 30
 					}, (error, token) => {
 						if (token) {
-							res.status(200).json({ message: 'Successfully logged in', token: token });
+							res.status(200).json({status: 'success', message: 'Successfully logged in', token: token });
 						} else {
-							res.status(404).json({message: 'Unable to load token'})
+							res.status(404).json({status: 'failure',message: 'Unable to load token'})
 						}
 					})
 				} else {
-					res.status(404).json({ message: 'Invalid password' });
+					res.status(404).json({status: 'failure', message: 'Invalid password' });
 				}
 			});
 		} else {
-			res.status(404).json({ message: 'User not found' });
+			res.status(404).json({status: 'failure', message: 'User not found' });
 		}
 		
 	} catch (error) {
-		res.status(404).json({ message: 'Something went wrong', error: error });
+		res.status(404).json({status: 'failure', message: 'Something went wrong', error: error });
 	}
 }
 
@@ -85,8 +86,8 @@ export const logoutUser = (req, res) => {
 		const token = req.headers.authorization.split(' ')[1];
 		savedTokens.add(token);
 		jwt.verify(token, process.env.SECRET_KEY, { ignoreExpiration: true });
-		res.status(200).json({ message: 'Successfully logged out' });
+		res.status(200).json({status: 'success', message: 'Successfully logged out' });
 	}catch (error) {
-		res.status(404).json({ message: 'Something went wrong', error: error });
+		res.status(404).json({status: 'failure', message: 'Something went wrong', error: error });
 	}
 }
