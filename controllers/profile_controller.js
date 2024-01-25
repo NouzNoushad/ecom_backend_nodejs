@@ -7,6 +7,7 @@ export const getProfile = async (req, res) => {
 		if (user) {
 			res.status(200).json({
 				status: 'success', data: {
+					id: user._id,
 					username: user.username,
 					email: user.email,
 					image: user.image,
@@ -24,20 +25,11 @@ export const updateProfile = async (req, res) => {
 	try {
 		const { id } = req.params;
 		const { username, email } = req.body;
-		const userExists = await userSchema.findOne({ email: email });
-		if (userExists) {
-			res.status(404).json({status: 'failure', message: 'Email already taken' });
-		} else {
 			await userSchema.updateOne({ _id: id }, req.body);
 			const user = await userSchema.findById(id);
 			res.status(200).json({
-				status: 'success', data: {
-					username: user.username,
-					email: user.email,
-					image: user.image,
-				}
+				status: 'success', message: "Profile updated successfully"
 			});
-		}
 		
 	} catch (error) {
 		res.status(404).json({status: 'failure', message: 'Something went wrong' });
